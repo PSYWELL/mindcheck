@@ -4,6 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>내 상태 점검 | 마인드 체크</title>
+  
+  <!-- PWA 메타태그 -->
+  <meta name="theme-color" content="#0a0a0a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="마인드체크">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%230a0a0a' width='180' height='180' rx='40'/><circle cx='90' cy='75' r='30' fill='none' stroke='%239d8a6e' stroke-width='5'/><path d='M55 130 Q90 105 125 130' fill='none' stroke='%239d8a6e' stroke-width='5' stroke-linecap='round'/></svg>">
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500;600&family=Pretendard:wght@200;300;400;500;600&display=swap" rel="stylesheet">
@@ -705,6 +714,100 @@
     /* 숨김 */
     .hidden { display: none !important; }
 
+    /* PWA 설치 배너 */
+    .install-banner {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--bg-card);
+      border-top: 1px solid var(--border-accent);
+      padding: var(--space-3);
+      z-index: 2000;
+      animation: slideUp 0.4s ease;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+    .install-banner-content {
+      max-width: 480px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .install-banner-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--accent-dim);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .install-banner-icon svg {
+      width: 28px;
+      height: 28px;
+      stroke: var(--accent-light);
+      fill: none;
+    }
+    .install-banner-text {
+      flex: 1;
+    }
+    .install-banner-text strong {
+      display: block;
+      font-size: 0.9375rem;
+      margin-bottom: 2px;
+    }
+    .install-banner-text span {
+      font-size: 0.8125rem;
+      color: var(--text-tertiary);
+    }
+    .install-banner-btn {
+      padding: 10px 16px;
+      background: var(--accent);
+      color: var(--bg-primary);
+      border: none;
+      border-radius: 100px;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .install-banner-close {
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      font-size: 1.25rem;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    /* 재방문 인사 */
+    .welcome-back {
+      position: fixed;
+      top: var(--space-3);
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--success);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 100px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      z-index: 1500;
+      animation: fadeInDown 0.4s ease, fadeOut 0.4s ease 2.5s forwards;
+    }
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+    @keyframes fadeOut {
+      to { opacity: 0; }
+    }
+
     /* 언어 전환 */
     .lang-switcher {
       position: fixed;
@@ -763,6 +866,28 @@
   </style>
 </head>
 <body>
+
+  <!-- PWA 설치 배너 -->
+  <div class="install-banner hidden" id="installBanner">
+    <div class="install-banner-content">
+      <div class="install-banner-icon">
+        <svg viewBox="0 0 24 24" stroke-width="2">
+          <path d="M12 5v14M5 12l7 7 7-7"/>
+        </svg>
+      </div>
+      <div class="install-banner-text">
+        <strong>홈 화면에 추가</strong>
+        <span>앱처럼 빠르게 접속하세요</span>
+      </div>
+      <button class="install-banner-btn" id="installBtn">추가</button>
+      <button class="install-banner-close" id="installClose">×</button>
+    </div>
+  </div>
+
+  <!-- 재방문 인사 -->
+  <div class="welcome-back hidden" id="welcomeBack">
+    다시 오셨네요! 👋
+  </div>
 
   <!-- 언어 전환 -->
   <div class="lang-switcher">
@@ -1129,12 +1254,25 @@
           </div>
           <header class="result-header">
             <span class="text-label">Complete</span>
-            <h2 class="text-h2">사전예약이 완료되었습니다</h2>
+            <h2 class="text-h2">체크가 완료되었습니다</h2>
           </header>
           <div class="result-message" style="background: var(--success-dim); border-color: var(--border-success);">
             <p>입력하신 이메일로 <strong>맞춤 분석 리포트</strong>와<br><strong>자율신경계 관리 가이드</strong>를 보내드렸습니다.<br><br>정식 출시 시 가장 먼저 알려드릴게요!</p>
           </div>
-          <p class="text-caption">문의: contact@example.com</p>
+          
+          <!-- 체크 횟수 표시 -->
+          <div style="background: var(--accent-dim); border: 1px solid var(--border-accent); border-radius: var(--radius-md); padding: var(--space-2); margin-bottom: var(--space-3); text-align: center;">
+            <p style="font-size: 0.875rem; color: var(--text-secondary);">
+              지금까지 <strong style="color: var(--accent-light); font-size: 1.25rem;" id="checkCount">1</strong>번 체크하셨습니다
+            </p>
+          </div>
+          
+          <!-- 다시 체크하기 버튼 -->
+          <button class="btn-ghost" style="width: 100%; margin-bottom: var(--space-2);" onclick="location.reload()">
+            다시 체크하기
+          </button>
+          
+          <p class="text-caption">정기적인 체크로 내 상태 변화를 추적해보세요</p>
         </div>
 
       </div>
@@ -1147,7 +1285,7 @@
 
   <script>
     (function() {
-      var STORAGE_KEY = 'mindcheck_completed';
+      var HISTORY_KEY = 'mindcheck_history';
       var currentStep = 1;
       var totalSteps = 8;
       var answers = {};
@@ -1159,57 +1297,39 @@
       var stepCount = document.getElementById('stepCount');
       var surveyFooter = document.getElementById('surveyFooter');
 
-      // 이미 완료한 사용자 체크
-      function checkAlreadyCompleted() {
+      // 히스토리 불러오기
+      function getHistory() {
         try {
-          var completed = localStorage.getItem(STORAGE_KEY);
-          if (completed) {
-            var data = JSON.parse(completed);
-            // 7일 이내 완료한 경우 차단
-            var sevenDays = 7 * 24 * 60 * 60 * 1000;
-            if (Date.now() - data.timestamp < sevenDays) {
-              return true;
-            }
-          }
-        } catch (e) {}
-        return false;
+          return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+        } catch (e) {
+          return [];
+        }
       }
 
-      // 완료 표시 저장
-      function markAsCompleted(email) {
+      // 히스토리에 저장
+      function saveToHistory(data) {
         try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          var history = getHistory();
+          history.push({
             timestamp: Date.now(),
-            email: email
-          }));
-        } catch (e) {}
+            date: new Date().toISOString(),
+            answers: data.answers,
+            email: data.email
+          });
+          // 최근 50개만 유지
+          if (history.length > 50) history = history.slice(-50);
+          localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+          return history.length;
+        } catch (e) {
+          return 0;
+        }
       }
 
-      // 이미 완료한 사용자에게 보여줄 화면
-      function showAlreadyCompletedMessage() {
-        landing.innerHTML = '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;"><div><div style="font-size:3rem;margin-bottom:24px;">✓</div><h2 class="text-h1" style="margin-bottom:16px;">이미 참여하셨습니다</h2><p class="text-body-lg" style="margin-bottom:32px;">설문은 1회만 참여 가능합니다.<br>입력하신 이메일로 리포트를 보내드렸습니다.</p><p class="text-caption">문의: contact@example.com</p></div></div>';
-      }
-
-      // 페이지 로드 시 체크
-      if (checkAlreadyCompleted()) {
-        showAlreadyCompletedMessage();
-        return; // 이후 코드 실행 안 함
-      }
-
-      // 테스트용: 현재 localStorage 상태 표시 (실제 배포 시 삭제)
-      try {
-        var existing = localStorage.getItem(STORAGE_KEY);
-        console.log('🔍 localStorage 상태:', existing ? JSON.parse(existing) : '없음');
-      } catch (e) {
-        console.log('⚠️ localStorage 접근 불가:', e.message);
-      }
+      // 체크 횟수 가져오기
+      var checkCount = getHistory().length;
+      console.log('📊 이전 체크 횟수:', checkCount);
 
       function startSurvey() {
-        // 시작 전 한번 더 체크
-        if (checkAlreadyCompleted()) {
-          showAlreadyCompletedMessage();
-          return;
-        }
         landing.classList.add('hidden');
         surveyWrapper.classList.add('active');
         window.scrollTo(0, 0);
@@ -1387,32 +1507,155 @@
           return;
         }
 
-        // 완료 표시 저장 (7일간 재참여 불가)
-        markAsCompleted(email);
+        // 히스토리에 저장
+        var totalChecks = saveToHistory({
+          answers: answers,
+          email: email,
+          phone: phone
+        });
 
-        // 저장 확인 테스트 (실제 배포 시 삭제)
-        try {
-          var saved = localStorage.getItem(STORAGE_KEY);
-          if (saved) {
-            alert('✅ 저장 성공!\n\n저장된 데이터:\n' + saved + '\n\n이제 새로고침하면 "이미 참여하셨습니다" 메시지가 표시됩니다.');
-          } else {
-            alert('⚠️ 저장 실패\n\n이 환경에서는 localStorage가 지원되지 않습니다.\n(Claude 미리보기, 시크릿 모드 등)\n\n실제 웹서버에서는 정상 작동합니다.');
-          }
-        } catch (e) {
-          alert('⚠️ localStorage 접근 불가\n\n' + e.message);
-        }
-
-        // 여기서 실제로는 서버로 데이터 전송
         console.log('=== 수집 데이터 ===');
         console.log('설문 응답:', answers);
         console.log('이메일:', email);
         console.log('연락처:', phone);
+        console.log('총 체크 횟수:', totalChecks);
 
         // 완료 화면
         document.getElementById('resultScreen').classList.remove('active');
         document.getElementById('completeScreen').classList.add('active');
+        
+        // 체크 횟수 표시
+        var checkCountEl = document.getElementById('checkCount');
+        if (checkCountEl) {
+          checkCountEl.textContent = totalChecks;
+        }
       });
 
+    })();
+  </script>
+
+  <!-- PWA + 사용자 자동 인식 -->
+  <script>
+    (function() {
+      // =====================
+      // 사용자 ID 자동 생성/인식
+      // =====================
+      var USER_KEY = 'mindcheck_user_id';
+      var VISIT_KEY = 'mindcheck_visits';
+      
+      function getUserId() {
+        var id = localStorage.getItem(USER_KEY);
+        if (!id) {
+          id = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+          localStorage.setItem(USER_KEY, id);
+        }
+        return id;
+      }
+      
+      function recordVisit() {
+        var visits = JSON.parse(localStorage.getItem(VISIT_KEY) || '[]');
+        visits.push({
+          timestamp: Date.now(),
+          date: new Date().toISOString()
+        });
+        // 최근 100개만 유지
+        if (visits.length > 100) visits = visits.slice(-100);
+        localStorage.setItem(VISIT_KEY, JSON.stringify(visits));
+        return visits.length;
+      }
+      
+      // 사용자 인식 및 방문 기록
+      var userId = getUserId();
+      var visitCount = recordVisit();
+      
+      console.log('👤 사용자 ID:', userId);
+      console.log('📊 방문 횟수:', visitCount);
+      
+      // 재방문자 인사 (2회 이상)
+      if (visitCount > 1 && visitCount <= 5) {
+        var welcomeEl = document.getElementById('welcomeBack');
+        if (welcomeEl) {
+          welcomeEl.classList.remove('hidden');
+          setTimeout(function() {
+            welcomeEl.remove();
+          }, 3000);
+        }
+      }
+      
+      // =====================
+      // 서비스워커 등록
+      // =====================
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('sw.js')
+            .then(function(registration) {
+              console.log('✅ ServiceWorker 등록 성공:', registration.scope);
+            })
+            .catch(function(error) {
+              console.log('❌ ServiceWorker 등록 실패:', error);
+            });
+        });
+      }
+      
+      // =====================
+      // PWA 설치 배너
+      // =====================
+      var deferredPrompt;
+      var installBanner = document.getElementById('installBanner');
+      var installBtn = document.getElementById('installBtn');
+      var installClose = document.getElementById('installClose');
+      var INSTALL_DISMISSED_KEY = 'mindcheck_install_dismissed';
+      
+      // 이미 닫았거나 설치된 경우 안 보여줌
+      var wasDismissed = localStorage.getItem(INSTALL_DISMISSED_KEY);
+      var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+      
+      window.addEventListener('beforeinstallprompt', function(e) {
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        // 닫은 적 없고, 독립 모드 아니면 배너 표시
+        if (!wasDismissed && !isStandalone && installBanner) {
+          setTimeout(function() {
+            installBanner.classList.remove('hidden');
+          }, 3000); // 3초 후 표시
+        }
+      });
+      
+      // 설치 버튼 클릭
+      if (installBtn) {
+        installBtn.addEventListener('click', function() {
+          if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then(function(choiceResult) {
+              if (choiceResult.outcome === 'accepted') {
+                console.log('✅ PWA 설치됨');
+              }
+              deferredPrompt = null;
+              installBanner.classList.add('hidden');
+            });
+          } else {
+            // iOS Safari인 경우 안내
+            alert('홈 화면에 추가하려면:\n\n1. 하단 공유 버튼(□↑) 탭\n2. "홈 화면에 추가" 선택');
+            installBanner.classList.add('hidden');
+          }
+        });
+      }
+      
+      // 닫기 버튼
+      if (installClose) {
+        installClose.addEventListener('click', function() {
+          installBanner.classList.add('hidden');
+          localStorage.setItem(INSTALL_DISMISSED_KEY, 'true');
+        });
+      }
+      
+      // 설치 완료 감지
+      window.addEventListener('appinstalled', function() {
+        console.log('🎉 앱 설치 완료!');
+        installBanner.classList.add('hidden');
+      });
+      
     })();
   </script>
 

@@ -4,6 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Self Check | Mind Check</title>
+  
+  <!-- PWA meta tags -->
+  <meta name="theme-color" content="#0a0a0a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="MindCheck">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%230a0a0a' width='180' height='180' rx='40'/><circle cx='90' cy='75' r='30' fill='none' stroke='%239d8a6e' stroke-width='5'/><path d='M55 130 Q90 105 125 130' fill='none' stroke='%239d8a6e' stroke-width='5' stroke-linecap='round'/></svg>">
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Inter:wght@200;300;400;500;600&display=swap" rel="stylesheet">
@@ -704,6 +713,100 @@
 
     .hidden { display: none !important; }
 
+    /* PWA Install Banner */
+    .install-banner {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--bg-card);
+      border-top: 1px solid var(--border-accent);
+      padding: var(--space-3);
+      z-index: 2000;
+      animation: slideUp 0.4s ease;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+    .install-banner-content {
+      max-width: 480px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .install-banner-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--accent-dim);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .install-banner-icon svg {
+      width: 28px;
+      height: 28px;
+      stroke: var(--accent-light);
+      fill: none;
+    }
+    .install-banner-text {
+      flex: 1;
+    }
+    .install-banner-text strong {
+      display: block;
+      font-size: 0.9375rem;
+      margin-bottom: 2px;
+    }
+    .install-banner-text span {
+      font-size: 0.8125rem;
+      color: var(--text-tertiary);
+    }
+    .install-banner-btn {
+      padding: 10px 16px;
+      background: var(--accent);
+      color: var(--bg-primary);
+      border: none;
+      border-radius: 100px;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .install-banner-close {
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      font-size: 1.25rem;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    /* Welcome Back */
+    .welcome-back {
+      position: fixed;
+      top: var(--space-3);
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--success);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 100px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      z-index: 1500;
+      animation: fadeInDown 0.4s ease, fadeOut 0.4s ease 2.5s forwards;
+    }
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+    @keyframes fadeOut {
+      to { opacity: 0; }
+    }
+
     /* Language Switcher */
     .lang-switcher {
       position: fixed;
@@ -762,6 +865,28 @@
   </style>
 </head>
 <body>
+
+  <!-- PWA Install Banner -->
+  <div class="install-banner hidden" id="installBanner">
+    <div class="install-banner-content">
+      <div class="install-banner-icon">
+        <svg viewBox="0 0 24 24" stroke-width="2">
+          <path d="M12 5v14M5 12l7 7 7-7"/>
+        </svg>
+      </div>
+      <div class="install-banner-text">
+        <strong>Add to Home Screen</strong>
+        <span>Quick access like an app</span>
+      </div>
+      <button class="install-banner-btn" id="installBtn">Add</button>
+      <button class="install-banner-close" id="installClose">×</button>
+    </div>
+  </div>
+
+  <!-- Welcome Back -->
+  <div class="welcome-back hidden" id="welcomeBack">
+    Welcome back! 👋
+  </div>
 
   <!-- Language Switcher -->
   <div class="lang-switcher">
@@ -1128,12 +1253,25 @@
           </div>
           <header class="result-header">
             <span class="text-label">Complete</span>
-            <h2 class="text-h2">You're all set!</h2>
+            <h2 class="text-h2">Check complete!</h2>
           </header>
           <div class="result-message" style="background: var(--success-dim); border-color: var(--border-success);">
             <p>We've sent your <strong>Personalized Analysis Report</strong> and<br><strong>Nervous System Guide</strong> to your email.<br><br>We'll notify you first when we launch!</p>
           </div>
-          <p class="text-caption">Questions? contact@example.com</p>
+          
+          <!-- Check count -->
+          <div style="background: var(--accent-dim); border: 1px solid var(--border-accent); border-radius: var(--radius-md); padding: var(--space-2); margin-bottom: var(--space-3); text-align: center;">
+            <p style="font-size: 0.875rem; color: var(--text-secondary);">
+              You've completed <strong style="color: var(--accent-light); font-size: 1.25rem;" id="checkCount">1</strong> check(s) so far
+            </p>
+          </div>
+          
+          <!-- Check again button -->
+          <button class="btn-ghost" style="width: 100%; margin-bottom: var(--space-2);" onclick="location.reload()">
+            Check Again
+          </button>
+          
+          <p class="text-caption">Track your changes with regular check-ins</p>
         </div>
 
       </div>
@@ -1146,7 +1284,7 @@
 
   <script>
     (function() {
-      var STORAGE_KEY = 'mindcheck_completed';
+      var HISTORY_KEY = 'mindcheck_history';
       var currentStep = 1;
       var totalSteps = 8;
       var answers = {};
@@ -1158,51 +1296,37 @@
       var stepCount = document.getElementById('stepCount');
       var surveyFooter = document.getElementById('surveyFooter');
 
-      // Check if already completed
-      function checkAlreadyCompleted() {
+      // Get history
+      function getHistory() {
         try {
-          var completed = localStorage.getItem(STORAGE_KEY);
-          if (completed) {
-            var data = JSON.parse(completed);
-            var sevenDays = 7 * 24 * 60 * 60 * 1000;
-            if (Date.now() - data.timestamp < sevenDays) {
-              return true;
-            }
-          }
-        } catch (e) {}
-        return false;
+          return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+        } catch (e) {
+          return [];
+        }
       }
 
-      function markAsCompleted(email) {
+      // Save to history
+      function saveToHistory(data) {
         try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          var history = getHistory();
+          history.push({
             timestamp: Date.now(),
-            email: email
-          }));
-        } catch (e) {}
+            date: new Date().toISOString(),
+            answers: data.answers,
+            email: data.email
+          });
+          if (history.length > 50) history = history.slice(-50);
+          localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+          return history.length;
+        } catch (e) {
+          return 0;
+        }
       }
 
-      function showAlreadyCompletedMessage() {
-        landing.innerHTML = '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;"><div><div style="font-size:3rem;margin-bottom:24px;">✓</div><h2 class="text-h1" style="margin-bottom:16px;">You\'ve already participated</h2><p class="text-body-lg" style="margin-bottom:32px;">The survey can only be taken once.<br>Your report has been sent to your email.</p><p class="text-caption">Questions? contact@example.com</p></div></div>';
-      }
-
-      if (checkAlreadyCompleted()) {
-        showAlreadyCompletedMessage();
-        return;
-      }
-
-      try {
-        var existing = localStorage.getItem(STORAGE_KEY);
-        console.log('🔍 localStorage status:', existing ? JSON.parse(existing) : 'empty');
-      } catch (e) {
-        console.log('⚠️ localStorage not accessible:', e.message);
-      }
+      var checkCount = getHistory().length;
+      console.log('📊 Previous checks:', checkCount);
 
       function startSurvey() {
-        if (checkAlreadyCompleted()) {
-          showAlreadyCompletedMessage();
-          return;
-        }
         landing.classList.add('hidden');
         surveyWrapper.classList.add('active');
         window.scrollTo(0, 0);
@@ -1376,28 +1500,146 @@
           return;
         }
 
-        markAsCompleted(email);
-
-        try {
-          var saved = localStorage.getItem(STORAGE_KEY);
-          if (saved) {
-            alert('✅ Saved successfully!\n\nStored data:\n' + saved + '\n\nRefresh the page to see the "already participated" message.');
-          } else {
-            alert('⚠️ Save failed\n\nlocalStorage is not supported in this environment.\n(Claude preview, incognito mode, etc.)\n\nIt will work on an actual web server.');
-          }
-        } catch (e) {
-          alert('⚠️ localStorage not accessible\n\n' + e.message);
-        }
+        // Save to history
+        var totalChecks = saveToHistory({
+          answers: answers,
+          email: email,
+          phone: phone
+        });
 
         console.log('=== Collected Data ===');
         console.log('Survey answers:', answers);
         console.log('Email:', email);
         console.log('Phone:', phone);
+        console.log('Total checks:', totalChecks);
 
         document.getElementById('resultScreen').classList.remove('active');
         document.getElementById('completeScreen').classList.add('active');
+        
+        // Show check count
+        var checkCountEl = document.getElementById('checkCount');
+        if (checkCountEl) {
+          checkCountEl.textContent = totalChecks;
+        }
       });
 
+    })();
+  </script>
+
+  <!-- PWA + User Recognition -->
+  <script>
+    (function() {
+      // =====================
+      // Auto User ID
+      // =====================
+      var USER_KEY = 'mindcheck_user_id';
+      var VISIT_KEY = 'mindcheck_visits';
+      
+      function getUserId() {
+        var id = localStorage.getItem(USER_KEY);
+        if (!id) {
+          id = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+          localStorage.setItem(USER_KEY, id);
+        }
+        return id;
+      }
+      
+      function recordVisit() {
+        var visits = JSON.parse(localStorage.getItem(VISIT_KEY) || '[]');
+        visits.push({
+          timestamp: Date.now(),
+          date: new Date().toISOString()
+        });
+        if (visits.length > 100) visits = visits.slice(-100);
+        localStorage.setItem(VISIT_KEY, JSON.stringify(visits));
+        return visits.length;
+      }
+      
+      var userId = getUserId();
+      var visitCount = recordVisit();
+      
+      console.log('👤 User ID:', userId);
+      console.log('📊 Visit count:', visitCount);
+      
+      // Welcome back (2+ visits)
+      if (visitCount > 1 && visitCount <= 5) {
+        var welcomeEl = document.getElementById('welcomeBack');
+        if (welcomeEl) {
+          welcomeEl.classList.remove('hidden');
+          setTimeout(function() {
+            welcomeEl.remove();
+          }, 3000);
+        }
+      }
+      
+      // =====================
+      // Service Worker
+      // =====================
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('sw.js')
+            .then(function(registration) {
+              console.log('✅ ServiceWorker registered:', registration.scope);
+            })
+            .catch(function(error) {
+              console.log('❌ ServiceWorker failed:', error);
+            });
+        });
+      }
+      
+      // =====================
+      // PWA Install Banner
+      // =====================
+      var deferredPrompt;
+      var installBanner = document.getElementById('installBanner');
+      var installBtn = document.getElementById('installBtn');
+      var installClose = document.getElementById('installClose');
+      var INSTALL_DISMISSED_KEY = 'mindcheck_install_dismissed';
+      
+      var wasDismissed = localStorage.getItem(INSTALL_DISMISSED_KEY);
+      var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+      
+      window.addEventListener('beforeinstallprompt', function(e) {
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        if (!wasDismissed && !isStandalone && installBanner) {
+          setTimeout(function() {
+            installBanner.classList.remove('hidden');
+          }, 3000);
+        }
+      });
+      
+      if (installBtn) {
+        installBtn.addEventListener('click', function() {
+          if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then(function(choiceResult) {
+              if (choiceResult.outcome === 'accepted') {
+                console.log('✅ PWA installed');
+              }
+              deferredPrompt = null;
+              installBanner.classList.add('hidden');
+            });
+          } else {
+            alert('To add to Home Screen:\n\n1. Tap the Share button (□↑)\n2. Select "Add to Home Screen"');
+            installBanner.classList.add('hidden');
+          }
+        });
+      }
+      
+      if (installClose) {
+        installClose.addEventListener('click', function() {
+          installBanner.classList.add('hidden');
+          localStorage.setItem(INSTALL_DISMISSED_KEY, 'true');
+        });
+      }
+      
+      window.addEventListener('appinstalled', function() {
+        console.log('🎉 App installed!');
+        installBanner.classList.add('hidden');
+      });
+      
     })();
   </script>
 
