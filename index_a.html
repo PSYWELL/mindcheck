@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+body<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -150,12 +150,14 @@
         </div>
 
         <div class="flex gap-4 items-center justify-center w-full max-w-md mx-auto">
-            <button class="flex-1 py-4 rounded-xl border-2 border-accent text-accent font-semibold hover:bg-green-50 transition-all flex items-center justify-center gap-2 text-base">
-                <i class="ph ph-heart"></i><span class="lang-ko">관심만 있음</span><span class="lang-en">Just Interested</span>
-            </button>
-            <button onclick="document.querySelector('#survey-section').scrollIntoView({behavior:'smooth'})" class="flex-1 py-4 rounded-xl bg-accent border-2 border-accent text-white font-semibold hover:bg-accentDark transition-all shadow-soft text-base">
-                <span class="lang-ko">지금 예약하기</span><span class="lang-en">Reserve Now</span>
-            </button>
+            <button id="btnInterested" class="flex-1 py-4 rounded-xl border-2 border-accent text-accent font-semibold hover:bg-green-50 transition-all flex items-center justify-center gap-2 text-base">
+  <i class="ph ph-heart"></i><span class="lang-ko">관심만 있음</span><span class="lang-en">Just Interested</span>
+</button>
+
+           <button id="btnReserve" onclick="document.querySelector('#survey-section').scrollIntoView({behavior:'smooth'})" class="flex-1 py-4 rounded-xl bg-accent border-2 border-accent text-white font-semibold hover:bg-accentDark transition-all shadow-soft text-base">
+  <span class="lang-ko">지금 예약하기</span><span class="lang-en">Reserve Now</span>
+</button>
+
         </div>
     </section>
 
@@ -401,10 +403,11 @@
                         </label>
                     </div>
 
-                    <button type="submit" class="w-full py-5 rounded-xl bg-[#00682F] text-white font-bold text-lg hover:bg-[#004d22] transition-all shadow-lg flex items-center justify-center gap-2">
-                        <span class="lang-ko">무료 신청 완료하고 혜택 받기</span><span class="lang-en">Complete Free Application & Get Benefits</span>
-                        <i class="ph-bold ph-arrow-right"></i>
-                    </button>
+                    <button id="btnSubmit" type="submit" class="w-full py-5 rounded-xl bg-[#00682F] text-white font-bold text-lg hover:bg-[#004d22] transition-all shadow-lg flex items-center justify-center gap-2">
+  <span class="lang-ko">무료 신청 완료하고 혜택 받기</span><span class="lang-en">Complete Free Application & Get Benefits</span>
+  <i class="ph-bold ph-arrow-right"></i>
+</button>
+
                 </form>
             </div>
         </div>
@@ -419,5 +422,31 @@
             card.classList.toggle('selected');
         }
     </script>
+    <script>
+/* 지금 예약하기 클릭 */
+document.getElementById('btnReserve')?.addEventListener('click', function(){
+  gtag('event', 'cta_click', {
+    cta_name: 'reserve_now',
+    page_path: window.location.pathname
+  });
+});
+
+/* 관심만 있음 클릭 */
+document.getElementById('btnInterested')?.addEventListener('click', function(){
+  gtag('event', 'cta_click', {
+    cta_name: 'just_interested',
+    page_path: window.location.pathname
+  });
+});
+
+/* 무료 신청 완료(제출 버튼 클릭) */
+document.getElementById('btnSubmit')?.addEventListener('click', function(){
+  gtag('event', 'lead_submit_click', {
+    cta_name: 'submit_application',
+    page_path: window.location.pathname
+  });
+});
+</script>
+
 </body>
 </html>
