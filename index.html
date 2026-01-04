@@ -691,14 +691,11 @@
                     </div>
                 </div>
 
-                <button id="btnSubmit" type="submit" class="w-full py-5 rounded-xl bg-[#00682F] text-white font-bold text-lg hover:bg-[#004d22] transition-all shadow-lg flex items-center justify-center gap-2">
-  <span class="lang-ko">무료 신청 완료하고 혜택 받기</span><span class="lang-en">Complete Free Application & Get Benefits</span>
-  <i class="ph-bold ph-arrow-right"></i>
+<button id="btnSubmit" type="submit" class="btn btn-primary" style="font-size: 18px;">
+  <span class="lang-ko">🎁 무료 신청 완료하고 혜택 받기</span>
+  <span class="lang-en">🎁 Complete & Get Benefits</span>
 </button>
 
-
-
-                
                 <div style="text-align: center; margin-top: 24px;">
                     <p style="font-size: 13px; color: var(--text-muted); display: inline-block;">
                         <span class="lang-ko">🛡️ 민감한 개인정보는 안전하게 보호되며 상품발송때만 사용되고 이후 폐기됩니다.</span>
@@ -768,5 +765,11 @@ document.getElementById('btnSubmit')?.addEventListener('click', function(){
   });
 });
 </script>
+<script>
+document.getElementById('btnSubmit')?.addEventListener('click', function(){
+  gtag('event', 'lead_submit_click', { page_path: window.location.pathname });
+});
+</script>
+
 </body>
 </html>
