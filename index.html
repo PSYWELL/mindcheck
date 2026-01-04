@@ -197,10 +197,11 @@
                 <span class="lang-en">If the doctor says "you're fine" but you're still suffering,<br>find the root pattern with personalized emotional fingerprint analysis.</span>
             </p>
             <div class="hero-cta">
-                <a href="#survey" class="btn btn-primary">
-                    <span class="lang-ko">참여하기 →</span>
-                    <span class="lang-en">Join Now →</span>
-                </a>
+               <a id="ctaJoin" href="#survey" class="btn btn-primary">
+  <span class="lang-ko">참여하기 →</span>
+  <span class="lang-en">Join Now →</span>
+</a>
+
                 <a href="#persona" class="btn btn-secondary">
                     <span class="lang-ko">나도 해당될까?</span>
                     <span class="lang-en">Is this for me?</span>
@@ -681,10 +682,11 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary" style="font-size: 18px;">
-                    <span class="lang-ko">🎁 무료 신청 완료하고 혜택 받기</span>
-                    <span class="lang-en">🎁 Complete & Get Benefits</span>
-                </button>
+                <button id="btnSubmit" type="submit" class="btn btn-primary" style="font-size: 18px;">
+  <span class="lang-ko">🎁 무료 신청 완료하고 혜택 받기</span>
+  <span class="lang-en">🎁 Complete & Get Benefits</span>
+</button>
+
                 
                 <div style="text-align: center; margin-top: 24px;">
                     <p style="font-size: 13px; color: var(--text-muted); display: inline-block;">
@@ -722,5 +724,23 @@
             alert(msg);
         });
     </script>
+    <script>
+/* 1) 상단 CTA 클릭 추적 */
+document.getElementById('ctaJoin')?.addEventListener('click', function(){
+  gtag('event', 'cta_click', {
+    event_label: 'jump_to_survey',
+    page_path: window.location.pathname
+  });
+});
+
+/* 2) 폼 제출 버튼 클릭 추적 */
+document.getElementById('btnSubmit')?.addEventListener('click', function(){
+  gtag('event', 'lead_submit_click', {
+    event_label: 'submit_button',
+    page_path: window.location.pathname
+  });
+});
+</script>
+
 </body>
 </html>
