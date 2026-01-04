@@ -770,6 +770,73 @@ document.getElementById('btnSubmit')?.addEventListener('click', function(){
   gtag('event', 'lead_submit_click', { page_path: window.location.pathname });
 });
 </script>
+<script>
+const SCRIPT_URL = "여기에_앱스스크립트_웹앱_URL_붙여넣기";
+
+function getUTM() {
+  const p = new URLSearchParams(window.location.search);
+  return {
+    utm_source: p.get('utm_source') || '',
+    utm_medium: p.get('utm_medium') || '',
+    utm_campaign: p.get('utm_campaign') || '',
+    utm_content: p.get('utm_content') || ''
+  };
+}
+
+document.querySelector('form')?.addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  const lang = document.documentElement.getAttribute('lang') || 'ko';
+  const utm = getUTM();
+
+  // ✅ 여기서 form 값을 읽어온다 (name 속성이 있어야 함)
+  const formData = new FormData(this);
+
+  const payload = {
+    page: window.location.pathname,
+    lang,
+    ...utm,
+
+    // 아래 key들은 input의 name="..." 과 일치해야 함
+    name: formData.get('name') || '',
+    email: formData.get('email') || '',
+    phone: formData.get('phone') || '',
+    age: formData.get('age') || '',
+    gender: formData.get('gender') || '',
+    q1: formData.get('q1') || '',
+    q2: formData.get('q2') || '',
+    q3: formData.get('q3') || '',
+    comment: formData.get('comment') || ''
+  };
+
+  // ✅ GA4 “제출 성공” 이벤트(원하면 유지)
+  if (typeof gtag === 'function') {
+    gtag('event', 'lead_submit_success', { page_path: window.location.pathname });
+  }
+
+  try {
+    const res = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const msg = (lang === 'ko')
+      ? '제출 완료! 감사합니다.'
+      : 'Submitted! Thank you.';
+    alert(msg);
+
+    this.reset();
+
+  } catch (err) {
+    const msg = (lang === 'ko')
+      ? '제출에 실패했습니다. 잠시 후 다시 시도해주세요.'
+      : 'Submission failed. Please try again.';
+    alert(msg);
+  }
+});
+</script>
 
 </body>
 </html>
