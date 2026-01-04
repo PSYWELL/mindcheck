@@ -682,10 +682,11 @@
                     </div>
                 </div>
 
-                <button id="btnSubmit" type="submit" class="btn btn-primary" style="font-size: 18px;">
-  <span class="lang-ko">🎁 무료 신청 완료하고 혜택 받기</span>
-  <span class="lang-en">🎁 Complete & Get Benefits</span>
+                <button id="btnSubmit" type="submit" class="w-full py-5 rounded-xl bg-[#00682F] text-white font-bold text-lg hover:bg-[#004d22] transition-all shadow-lg flex items-center justify-center gap-2">
+  <span class="lang-ko">무료 신청 완료하고 혜택 받기</span><span class="lang-en">Complete Free Application & Get Benefits</span>
+  <i class="ph-bold ph-arrow-right"></i>
 </button>
+
 
                 
                 <div style="text-align: center; margin-top: 24px;">
@@ -732,7 +733,30 @@
     alert(msg);
   });
 </script>
+<script>
+document.querySelector('form')?.addEventListener('submit', function(e) {
+  e.preventDefault();
+
+  // 제출 완료 이벤트(가장 중요)
+  gtag('event', 'lead_submit_success', {
+    page_path: window.location.pathname
+  });
+
+  const lang = document.documentElement.getAttribute('lang');
+  const msg = lang === 'ko' ? '설문이 제출되었습니다. 감사합니다!' : 'Survey submitted. Thank you!';
+  alert(msg);
+});
+</script>
 
 
+<!-- 여기! </body> 바로 위 -->
+<script>
+document.getElementById('btnSubmit')?.addEventListener('click', function(){
+  gtag('event', 'lead_submit_click', {
+    event_label: 'submit_button',
+    page_path: window.location.pathname
+  });
+});
+</script>
 </body>
 </html>
