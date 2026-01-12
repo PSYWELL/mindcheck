@@ -401,53 +401,54 @@
         </div>
     </section>
 
+   <script>
+  // Language toggle
+  function toggleLanguage() {
+    const html = document.documentElement;
+    html.setAttribute('lang', html.getAttribute('lang') === 'ko' ? 'en' : 'ko');
+  }
+
+  // Build Tally URL with current landing query params (UTM/ref_code etc.)
+  const TALLY_FORM_URL = 'https://tally.so/r/KY50bg';
+
+  function getQueryParams() {
+    const params = new URLSearchParams(window.location.search);
+    const obj = {};
+    for (const [k, v] of params.entries()) obj[k] = v;
+    return obj;
+  }
+
+  function buildTallyUrl(extraParams = {}) {
+    const base = new URL(TALLY_FORM_URL);
+    const current = getQueryParams();
+
+    // Whitelist of params to pass through
+    const passKeys = ['utm_source','utm_campaign','utm_content','ref_code','respondent_id','returning','device'];
+
+    passKeys.forEach((k) => {
+      if (current[k]) base.searchParams.set(k, current[k]);
+    });
+
+    // Force variant/step for analytics consistency
+    base.searchParams.set('variant', 'index_a');
+    base.searchParams.set('step', 'landing_to_survey');
+
+    // Override / add any extras
+    Object.entries(extraParams).forEach(([k, v]) => {
+      if (v !== undefined && v !== null && String(v).length > 0) base.searchParams.set(k, v);
+    });
+
+    return base.toString();
+  }
+
+  function goToSurvey() {
+    window.location.href = buildTallyUrl();
+  }
+</script>
+
     <script>
-
-        // Language toggle
-        function toggleLanguage() {
-            const html = document.documentElement;
-            html.setAttribute('lang', html.getAttribute('lang') === 'ko' ? 'en' : 'ko');
-        }
-
-        // Build Tally URL with current landing query params (UTM/ref_code etc.)
-        const TALLY_FORM_URL = 'https://tally.so/r/XXXXXX'; // TODO: replace with your actual Tally form URL
-
-        function getQueryParams() {
-            const params = new URLSearchParams(window.location.search);
-            const obj = {};
-            for (const [k, v] of params.entries()) obj[k] = v;
-            return obj;
-        }
-
-        function buildTallyUrl(extraParams = {}) {
-            const base = new URL(TALLY_FORM_URL);
-            const current = getQueryParams();
-
-            // Whitelist of params to pass through
-            const passKeys = ['utm_source','utm_campaign','utm_content','ref_code','respondent_id','returning','device'];
-
-            passKeys.forEach((k) => {
-                if (current[k]) base.searchParams.set(k, current[k]);
-            });
-
-            // Force variant/step for analytics consistency
-            base.searchParams.set('variant', 'index_a');
-            base.searchParams.set('step', 'landing_to_survey');
-
-            // Override / add any extras
-            Object.entries(extraParams).forEach(([k, v]) => {
-                if (v !== undefined && v !== null && String(v).length > 0) base.searchParams.set(k, v);
-            });
-
-            return base.toString();
-        }
-
-        function goToSurvey() {
-            window.location.href = buildTallyUrl();
-        }
-const TALLY_FORM_URL = 'https://tally.so/r/KY50bg'; // TODO: replace with your actual Tally form URL
-
-    </script>
+  // navigator.serviceWorker.register('sw.js');
+</script>
 
 </body>
 </html>
